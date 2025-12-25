@@ -76,6 +76,6 @@
     "unified": "^11.0.5"
   },
   "resolutions": {
-    "stringify-entities": "4.0.2"
+    "stringify-entities": "4.0.4"
   }
 }
