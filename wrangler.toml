@@ -24,7 +24,7 @@ crons = ["0 0 * * *"]
 
 [[routes]]
 # Refer to https://developers.cloudflare.com/workers/wrangler/configuration/#routes
-pattern = "shz.al"
+pattern = "paste.thetech.network"
 custom_domain = true
 
 [[kv_namespaces]]
@@ -37,10 +37,10 @@ bucket_name = "pb-shz-al"  # bucket name of your R2 bucket
 
 [vars]
 # must be consistent with your routes
-DEPLOY_URL = "https://shz.al"
+DEPLOY_URL = "https://paste.thetech.network"
 
 # url to repo, displayed in the index page
-REPO = "https://github.com/SharzyL/pastebin-worker"
+REPO = "https://github.com/thetechnetwork/pastebin-worker"
 
 # the page title displayed in index page
 INDEX_PAGE_TITLE = "Pastebin Worker"
