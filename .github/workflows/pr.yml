@@ -24,7 +24,7 @@ jobs:
           npm run coverage
 
       - name: "Upload Coverage"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-goshujin
           path: coverage
@@ -58,7 +58,7 @@ jobs:
         run: npm run coverage
 
       - name: "Upload Coverage"
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-head
           path: coverage
@@ -70,13 +70,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: "Download HEAD coverage artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: coverage-head
           path: coverage
 
       - name: "Download goshujin coverage artifacts"
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: coverage-goshujin
           path: coverage-goshujin
