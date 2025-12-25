@@ -51,8 +51,8 @@ jobs:
 
       - name: "Lint"
         run: |
-          npm run prettier -- -c .
-          npm run eslint -- .
+          npx prettier -c .
+          npm run lint
 
       - name: "Run Test with Coverage"
         run: npm run coverage
