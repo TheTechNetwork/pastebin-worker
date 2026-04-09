@@ -1,5 +1,7 @@
-import { Card, CardBody, CardProps, Tab, Tabs } from "@heroui/react"
-import React, { useRef, useState, DragEvent } from "react"
+import type { CardProps } from "./ui/index.js"
+import { Card, CardBody, Tab, Tabs } from "./ui/index.js"
+import type { DragEvent } from "react"
+import { useRef, useState } from "react"
 import { formatSize } from "../utils/utils.js"
 import { XIcon } from "./icons.js"
 import { cardOverrides, tst } from "../utils/overrides.js"
@@ -7,7 +9,7 @@ import { CodeEditor } from "./CodeEditor.js"
 
 export type EditKind = "edit" | "file"
 
-export type PasteEditState = {
+export interface PasteEditState {
   editKind: EditKind
   editContent: string
   editFilename?: string
@@ -33,9 +35,9 @@ export function PasteInputPanel({ isPasteLoading, state, onStateChange, ...rest 
     e.preventDefault()
     const items = e.dataTransfer?.items
     if (items) {
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].kind === "file") {
-          const file = items[i].getAsFile()!
+      for (const item of Array.from(items)) {
+        if (item.kind === "file") {
+          const file = item.getAsFile()!
           setFile(file)
           break
         }
@@ -50,7 +52,7 @@ export function PasteInputPanel({ isPasteLoading, state, onStateChange, ...rest 
         <Tabs
           variant="underlined"
           classNames={{
-            tabList: `gap-2 w-full px-2 py-0 border-divider`,
+            tabList: `gap-2 w-full py-0 border-divider mb-2 -ml-1`,
             cursor: `w-[80%] ${tst}`,
             tab: `max-w-fit px-2 h-8 px-2`,
             panel: "pb-1",
@@ -96,7 +98,7 @@ export function PasteInputPanel({ isPasteLoading, state, onStateChange, ...rest 
                 className="hidden"
                 onChange={(e) => {
                   const files = e.target.files
-                  if (files && files.length) {
+                  if (files?.length) {
                     setFile(files[0])
                   }
                 }}

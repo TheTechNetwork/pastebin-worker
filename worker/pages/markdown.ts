@@ -1,5 +1,5 @@
 import { unified } from "unified"
-import { Root } from "mdast"
+import type { Root } from "mdast"
 import remarkParse from "remark-parse"
 import remarkGfm from "remark-gfm"
 import remarkRehype from "remark-rehype"
@@ -8,10 +8,10 @@ import { toString } from "mdast-util-to-string"
 
 import { escapeHtml } from "../common.js"
 
-const descriptionLimit: number = 200
-const defaultTitle: string = "Untitled"
+const descriptionLimit = 200
+const defaultTitle = "Untitled"
 
-type DocMetadata = {
+interface DocMetadata {
   title: string
   description: string
 }
@@ -59,7 +59,6 @@ export function makeMarkdown(content: string): string {
   <link href='https://cdn.jsdelivr.net/npm/prismjs@1.30.0/themes/prism.css' rel='stylesheet' />
   <link href='https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/line-numbers/prism-line-numbers.css' rel='stylesheet' />
   <link rel='stylesheet' href='https://pages.github.com/assets/css/style.css'>
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
   <script id="MathJax-script" async
           src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
   </script>

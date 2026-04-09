@@ -1,9 +1,11 @@
 import type { PasteSetting } from "../components/PasteSettingPanel.js"
 import type { PasteEditState } from "../components/PasteInputPanel.js"
-import { APIUrl, ErrorWithTitle } from "./utils.js"
+import { ErrorWithTitle } from "./utils.js"
 import type { PasteResponse } from "../../shared/interfaces.js"
-import { encodeKey, encrypt, EncryptionScheme, genKey } from "./encryption.js"
-import { UploadError, uploadMPU, uploadNormal, UploadOptions } from "../../shared/uploadPaste.js"
+import type { EncryptionScheme } from "./encryption.js"
+import { encodeKey, encrypt, genKey } from "./encryption.js"
+import type { UploadOptions } from "../../shared/uploadPaste.js"
+import { UploadError, uploadMPU, uploadNormal } from "../../shared/uploadPaste.js"
 
 async function genAndEncrypt(scheme: EncryptionScheme, content: string | Uint8Array) {
   const key = await genKey(scheme)
@@ -20,6 +22,7 @@ export async function uploadPaste(
   pasteSetting: PasteSetting,
   editorState: PasteEditState,
   onEncryptionKeyChange: (k: string | undefined) => void, // we only generate key on upload, so need a callback of key generation
+  config: Env,
   onProgress?: (progress: number | undefined) => void,
 ): Promise<PasteResponse> {
   async function constructContent(): Promise<File> {
@@ -29,7 +32,7 @@ export async function uploadPaste(
       }
       if (pasteSetting.doEncrypt) {
         const { key, ciphertext } = await genAndEncrypt(encryptionScheme, await editorState.file.bytes())
-        const file = new File([ciphertext], editorState.file.name)
+        const file = new File([ciphertext as BlobPart], editorState.file.name)
         onEncryptionKeyChange(key)
         return file
       } else {
@@ -43,7 +46,7 @@ export async function uploadPaste(
       if (pasteSetting.doEncrypt) {
         const { key, ciphertext } = await genAndEncrypt(encryptionScheme, editorState.editContent)
         onEncryptionKeyChange(key)
-        return new File([ciphertext], editorState.editFilename || "")
+        return new File([ciphertext as BlobPart], editorState.editFilename || "")
       } else {
         onEncryptionKeyChange(undefined)
         return new File([editorState.editContent], editorState.editFilename || "")
@@ -67,10 +70,10 @@ export async function uploadPaste(
 
   try {
     if (contentLength < 5 * 1024 * 1024) {
-      return await uploadNormal(APIUrl, options)
+      return await uploadNormal(config.DEPLOY_URL, options)
     } else {
       if (onProgress) onProgress(0)
-      return await uploadMPU(APIUrl, minChunkSize, options, (doneBytes, allBytes) => {
+      return await uploadMPU(config.DEPLOY_URL, minChunkSize, options, (doneBytes, allBytes) => {
         if (onProgress) onProgress((100 * doneBytes) / allBytes)
       })
     }

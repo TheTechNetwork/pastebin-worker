@@ -15,13 +15,17 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "22"
-          cache: "npm"
+
+      - name: "Install pnpm"
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: "Run Test with Coverage"
         run: |
-          npm ci
-          npm run build:frontend
-          npm run coverage
+          pnpm install
+          pnpm build:frontend
+          pnpm coverage --testTimeout 15000
 
       - name: "Upload Coverage"
         uses: actions/upload-artifact@v6
@@ -41,21 +45,28 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: "22"
-          cache: "npm"
+
+      - name: "Install pnpm"
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
 
       - name: "Install Deps"
-        run: npm ci
+        run: pnpm install
 
       - name: "Build Frontend"
-        run: npm run build:frontend
+        run: pnpm build:frontend
 
       - name: "Lint"
         run: |
-          npx prettier -c .
-          npm run lint
+          pnpm prettier -c .
+          pnpm lint
+
+      - name: "Type Check"
+        run: pnpm typecheck
 
       - name: "Run Test with Coverage"
-        run: npm run coverage
+        run: pnpm coverage --testTimeout 15000
 
       - name: "Upload Coverage"
         uses: actions/upload-artifact@v6

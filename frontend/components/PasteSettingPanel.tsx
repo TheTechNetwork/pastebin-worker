@@ -1,8 +1,8 @@
+import type { CardProps } from "./ui/index.js"
 import {
   Card,
   CardBody,
   CardHeader,
-  CardProps,
   Divider,
   Input,
   mergeClasses,
@@ -10,15 +10,15 @@ import {
   RadioGroup,
   Switch,
   Tooltip,
-} from "@heroui/react"
-import { BaseUrl, verifyExpiration, verifyManageUrl, verifyName } from "../utils/utils.js"
+} from "./ui/index.js"
+import { verifyExpiration, verifyManageUrl, verifyName } from "../utils/utils.js"
 import React from "react"
 import { InfoIcon } from "./icons.js"
 import { cardOverrides, inputOverrides, radioOverrides, switchOverrides, tst } from "../utils/overrides.js"
 
 export type UploadKind = "short" | "long" | "custom" | "manage"
 
-export type PasteSetting = {
+export interface PasteSetting {
   uploadKind: UploadKind
   expiration: string
   password: string
@@ -31,9 +31,10 @@ export type PasteSetting = {
 interface PasteSettingPanelProps extends CardProps {
   setting: PasteSetting
   onSettingChange: (setting: PasteSetting) => void
+  config: Env
 }
 
-export function PanelSettingsPanel({ setting, onSettingChange, ...rest }: PasteSettingPanelProps) {
+export function PanelSettingsPanel({ setting, onSettingChange, config, ...rest }: PasteSettingPanelProps) {
   const radioClassNames = mergeClasses(radioOverrides, { labelWrapper: "ml-2.5" })
   return (
     <Card aria-label="Pastebin setting panel" classNames={cardOverrides} {...rest}>
@@ -44,42 +45,43 @@ export function PanelSettingsPanel({ setting, onSettingChange, ...rest }: PasteS
           <Input
             type="text"
             label="Expiration"
-            // to avoid duplicated name, see https://github.com/adobe/react-spectrum/discussions/8037
-            aria-labelledby=""
             classNames={{
-              base: "basis-80",
+              base: "basis-40",
               ...inputOverrides,
             }}
             defaultValue="7d"
             value={setting.expiration}
             isRequired
             onValueChange={(e) => onSettingChange({ ...setting, expiration: e })}
-            isInvalid={!verifyExpiration(setting.expiration)[0]}
-            errorMessage={verifyExpiration(setting.expiration)[1]}
-            description={verifyExpiration(setting.expiration)[1]}
+            isInvalid={!verifyExpiration(setting.expiration, config)[0]}
+            errorMessage={verifyExpiration(setting.expiration, config)[1]}
+            description={verifyExpiration(setting.expiration, config)[1]}
           />
           <Input
             type="password"
             label="Password"
-            aria-labelledby=""
             value={setting.password}
             onValueChange={(p) => onSettingChange({ ...setting, password: p })}
-            classNames={inputOverrides}
+            isClearable
+            classNames={{
+              base: "flex-1",
+              ...inputOverrides,
+            }}
             placeholder={"Generated randomly"}
             description="Used to update/delete your paste"
           />
         </div>
         <RadioGroup
-          className="gap-4 mb-3 w-full"
+          className="mb-3 w-full"
           value={setting.uploadKind}
           onValueChange={(v) => onSettingChange({ ...setting, uploadKind: v as UploadKind })}
         >
-          <Radio value="short" description={`Example: ${BaseUrl}/BxWH`} classNames={radioClassNames}>
+          <Radio value="short" description={`Example: ${config.DEPLOY_URL}/BxWH`} classNames={radioClassNames}>
             Generate a short random URL
           </Radio>
           <Radio
             value="long"
-            description={`Example: ${BaseUrl}/5HQWYNmjA4h44SmybeThXXAm`}
+            description={`Example: ${config.DEPLOY_URL}/5HQWYNmjA4h44SmybeThXXAm`}
             classNames={{
               description: "text-ellipsis max-w-[calc(100vw-5rem)] whitespace-nowrap overflow-hidden",
               ...radioClassNames,
@@ -87,7 +89,7 @@ export function PanelSettingsPanel({ setting, onSettingChange, ...rest }: PasteS
           >
             Generate a long random URL
           </Radio>
-          <Radio value="custom" classNames={radioClassNames} description={`Example: ${BaseUrl}/~stocking`}>
+          <Radio value="custom" classNames={radioClassNames} description={`Example: ${config.DEPLOY_URL}/~stocking`}>
             Set by your own
           </Radio>
           {setting.uploadKind === "custom" ? (
@@ -100,13 +102,13 @@ export function PanelSettingsPanel({ setting, onSettingChange, ...rest }: PasteS
               errorMessage={verifyName(setting.name)[1]}
               startContent={
                 <div className="pointer-events-none flex items-center">
-                  <span className="text-default-500 text-small w-max">{`${BaseUrl}/~`}</span>
+                  <span className="text-default-500 text-sm w-max">{`${config.DEPLOY_URL}/~`}</span>
                 </div>
               }
             />
           ) : null}
           <Radio value="manage" classNames={radioClassNames}>
-            <div className="">Update or delete</div>
+            <div className="">Update or delete an existing paste</div>
           </Radio>
           {setting.uploadKind === "manage" ? (
             <Input
@@ -114,8 +116,8 @@ export function PanelSettingsPanel({ setting, onSettingChange, ...rest }: PasteS
               onValueChange={(m) => onSettingChange({ ...setting, manageUrl: m })}
               type="text"
               className="shrink"
-              isInvalid={!verifyManageUrl(setting.manageUrl)[0]}
-              errorMessage={verifyManageUrl(setting.manageUrl)[1]}
+              isInvalid={!verifyManageUrl(setting.manageUrl, config)[0]}
+              errorMessage={verifyManageUrl(setting.manageUrl, config)[1]}
               placeholder={`Manage URL`}
             />
           ) : null}
