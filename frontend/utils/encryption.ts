@@ -11,8 +11,8 @@ function base64VariantEncode(src: Uint8Array): string {
   // we use a variant of base64 that replaces "/" with "_" and removes trailing padding
   const uint8Array = new Uint8Array(src)
   let binaryString = ""
-  for (let i = 0; i < uint8Array.length; i++) {
-    binaryString += String.fromCharCode(uint8Array[i])
+  for (const byte of uint8Array) {
+    binaryString += String.fromCharCode(byte)
   }
   return btoa(binaryString).replaceAll("/", "_").replaceAll("=", "")
 }
@@ -36,7 +36,7 @@ export async function genKey(scheme: EncryptionScheme): Promise<CryptoKey> {
 export async function encrypt(scheme: EncryptionScheme, key: CryptoKey, msg: Uint8Array): Promise<Uint8Array> {
   if (scheme === "AES-GCM") {
     const iv = crypto.getRandomValues(new Uint8Array(12))
-    const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, msg)
+    const ciphertext = await crypto.subtle.encrypt({ name: "AES-GCM", iv: iv }, key, msg as BufferSource)
     return concat(iv, new Uint8Array(ciphertext))
   }
   throw new Error(`Unsupported encryption scheme: ${scheme as string}`)
@@ -51,7 +51,9 @@ export async function decrypt(
     const iv = ciphertext.slice(0, 12)
     const trueCiphertext = ciphertext.slice(12)
     try {
-      return new Uint8Array(await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, trueCiphertext))
+      return new Uint8Array(
+        await crypto.subtle.decrypt({ name: "AES-GCM", iv: iv as BufferSource }, key, trueCiphertext as BufferSource),
+      )
     } catch {
       return null
     }
@@ -66,7 +68,10 @@ export async function encodeKey(key: CryptoKey): Promise<string> {
 
 export async function decodeKey(scheme: EncryptionScheme, key: string): Promise<CryptoKey> {
   if (scheme === "AES-GCM") {
-    return await crypto.subtle.importKey("raw", base64VariantDecode(key), "AES-GCM", true, ["encrypt", "decrypt"])
+    return await crypto.subtle.importKey("raw", base64VariantDecode(key) as BufferSource, "AES-GCM", true, [
+      "encrypt",
+      "decrypt",
+    ])
   }
   throw new Error(`Unsupported encryption scheme: ${scheme as string}`)
 }
