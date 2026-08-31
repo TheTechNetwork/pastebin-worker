@@ -7,19 +7,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.1.0
         with:
           ref: goshujin
 
       - name: "Install Node"
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v6.5.0
         with:
-          node-version: "24"
+          node-version: "24.20.0"
 
       - name: "Install pnpm"
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v4.4.0
         with:
-          version: 10
+          version: 10.34.5
 
       - name: "Run Test with Coverage"
         run: |
@@ -28,7 +28,7 @@ jobs:
           pnpm coverage --testTimeout 15000
 
       - name: "Upload Coverage"
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: coverage-goshujin
           path: coverage
@@ -37,19 +37,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.1.0
         with:
           ref: ${{ github.ref }}
 
       - name: "Install Node"
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v6.5.0
         with:
-          node-version: "24"
+          node-version: "24.20.0"
 
       - name: "Install pnpm"
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@v4.4.0
         with:
-          version: 10
+          version: 10.34.5
 
       - name: "Install Deps"
         run: pnpm install
@@ -69,7 +69,7 @@ jobs:
         run: pnpm coverage --testTimeout 15000
 
       - name: "Upload Coverage"
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v6.0.0
         with:
           name: coverage-head
           path: coverage
@@ -78,21 +78,21 @@ jobs:
     needs: test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.1.0
 
       - name: "Download HEAD coverage artifacts"
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v7.0.0
         with:
           name: coverage-head
           path: coverage
 
       - name: "Download goshujin coverage artifacts"
-        uses: actions/download-artifact@v7
+        uses: actions/download-artifact@v7.0.0
         with:
           name: coverage-goshujin
           path: coverage-goshujin
 
       - name: "Report Coverage"
-        uses: davelosert/vitest-coverage-report-action@v2
+        uses: davelosert/vitest-coverage-report-action@v2.13.0
         with:
           json-summary-compare-path: coverage-goshujin/coverage-summary.json
