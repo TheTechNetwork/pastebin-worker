@@ -24,7 +24,7 @@
   "author": "SharzyL <me@sharzy.in>",
   "license": "MIT",
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.11.1",
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
     "@craftamap/esbuild-plugin-html": "^0.9.0",
     "@eslint/js": "^10.0.1",
     "@testing-library/dom": "^10.4.1",
