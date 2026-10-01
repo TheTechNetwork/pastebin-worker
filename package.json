@@ -57,7 +57,7 @@
     "printWidth": 120
   },
   "dependencies": {
-    "@mjackson/multipart-parser": "^0.8.2",
+    "@mjackson/multipart-parser": "^0.10.0",
     "@tailwindcss/vite": "^4.2.1",
     "@types/bcrypt": "^6.0.0",
     "@types/react": "19.2.14",
